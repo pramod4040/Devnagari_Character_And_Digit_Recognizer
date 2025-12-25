@@ -23,13 +23,20 @@ ROOT_DIR = os.path.join(FLASH_ROOT, '..')
 
 
 
-@app.route('/')
+@app.route('/status')
 def hello_world():
     """ Print Hello world as the response body.  """
     a = __name__
     # k = pre.predit(a)
     value = {"status": 200, "message": "All Okay"}
     return jsonify(value)
+
+@app.route('/')
+def try_it_out():
+    """ Print Hello world as the response body.  """
+    # a = __name__
+    # k = pre.predit(a)
+    return render_template("index.html")
 
 
 @app.route('/try-it-out')
