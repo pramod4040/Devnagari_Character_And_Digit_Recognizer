@@ -1,0 +1,10 @@
+tensorflow
+flask
+Pillow
+scikit-image
+tqdm
+pandas
+matplotlib
+seaborn
+scikit-learn
+playsound

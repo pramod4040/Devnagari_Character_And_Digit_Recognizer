@@ -1,0 +1,14 @@
+data
+identifiers/GoodModelResult
+identifiers/model_checkpoints
+*.png
+*.jpg
+*.csv
+reportPrep
+trainModel
+trainModel
+__pycache__
+*.pyc
+.venv
+.DS_Store
+

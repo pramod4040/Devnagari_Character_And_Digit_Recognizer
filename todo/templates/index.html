@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Devanagari Character Recognizer</title>
+  </head>
+  <style media="screen">
+    .flex-parent{
+      display: flex;
+    }
+    .result-box{
+      height:200px;
+      width:200px;
+    }
+    #sig-canvas {
+      border: 2px dotted #CCCCCC;
+      /* border-radius: 15px; */
+      cursor: crosshair;
+      /* background-color: black;
+      color:black; */
+    }
+  </style>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <body>
+    <!-- <h1>Hello world</h1> -->
+    <br>
+
+    <!-- Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Write Devanagari Character Test</h1>
+      <!-- <p>Sign in the canvas below and save your signature as an image!</p> -->
+    </div>
+  </div>
+  <div class="row flex-parent">
+    <div class="col-md-12">
+      <canvas id="sig-canvas" width="256" height="256">
+        Get a better browser, bro.
+      </canvas>
+    </div>
+    <div class=col-md-12>
+        <div class="result-box">
+            <h1 id="result-box"></h1>
+        </div>
+    </div>
+
+    <div class=col-md-12>
+      <h5>Select Model</h5>
+        <select name="modelName" id="modelName">
+            <!-- <option value="moeModelV2Good" selected>MOE Model</option> -->
+            <option value="good_mode">My Model</option>
+        </select>
+
+        <!-- <label for="">Enter Folder Class Name</label>
+        <input type="text" id="folderName"> -->
+  </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <button class="btn btn-primary" id="sig-submitBtn">Submit Character</button>
+      <button class="btn btn-default" id="sig-clearBtn">Clear Character</button>
+      <button class="btn btn-warning" id="predict-character">Predict Character</button>
+    </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="col-md-12">
+      <textarea id="sig-dataUrl" class="form-control" rows="5">Data URL for your Character will go here!</textarea>
+    </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="col-md-12">
+      <img id="sig-image" src="" alt="Your Image will go here!"/>
+    </div>
+  </div>
+</div>
+
+  </body>
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+
+  <!-- Devanagari write in canvas -->
+   <script type="text/javascript">
+       (function() {
+     window.requestAnimFrame = (function(callback) {
+       return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimaitonFrame ||
+         function(callback) {
+           window.setTimeout(callback, 1000 / 60);
+         };
+     })();
+
+     var canvas = document.getElementById("sig-canvas");
+     var ctx = canvas.getContext("2d");
+     ctx.strokeStyle = "#222222";
+     ctx.lineWidth = 14;
+     ctx.strokeStyle = "white";
+
+    //  changing color
+     ctx.beginPath();
+     ctx.fillRect(0, 0, canvas.width, canvas.height);
+     ctx.fillStyle = "black";
+     ctx.fill();
+     
+     ctx.fontWeight = 1000;
+
+     var drawing = false;
+     var mousePos = {
+       x: 0,
+       y: 0
+     };
+     var lastPos = mousePos;
+
+     canvas.addEventListener("mousedown", function(e) {
+       drawing = true;
+       lastPos = getMousePos(canvas, e);
+     }, false);
+
+     canvas.addEventListener("mouseup", function(e) {
+       drawing = false;
+     }, false);
+
+     canvas.addEventListener("mousemove", function(e) {
+       mousePos = getMousePos(canvas, e);
+     }, false);
+
+     // Add touch event support for mobile
+    //  canvas.addEventListener("touchstart", function(e) {
+    //     e.preventDefault();
+    //  }, false);
+
+     canvas.addEventListener("touchmove", function(e) {
+      e.preventDefault();
+       var touch = e.touches[0];
+       var me = new MouseEvent("mousemove", {
+         clientX: touch.clientX,
+         clientY: touch.clientY
+       });
+       canvas.dispatchEvent(me);
+     }, false);
+
+     canvas.addEventListener("touchstart", function(e) {
+       e.preventDefault();
+       mousePos = getTouchPos(canvas, e);
+       var touch = e.touches[0];
+       var me = new MouseEvent("mousedown", {
+         clientX: touch.clientX,
+         clientY: touch.clientY
+       });
+       canvas.dispatchEvent(me);
+     }, false);
+
+     canvas.addEventListener("touchend", function(e) {
+       e.preventDefault();
+       var me = new MouseEvent("mouseup", {});
+       canvas.dispatchEvent(me);
+     }, false);
+
+     function getMousePos(canvasDom, mouseEvent) {
+       var rect = canvasDom.getBoundingClientRect();
+       return {
+         x: mouseEvent.clientX - rect.left,
+         y: mouseEvent.clientY - rect.top
+       }
+     }
+
+     function getTouchPos(canvasDom, touchEvent) {
+       var rect = canvasDom.getBoundingClientRect();
+       return {
+         x: touchEvent.touches[0].clientX - rect.left,
+         y: touchEvent.touches[0].clientY - rect.top
+       }
+     }
+
+     function renderCanvas() {
+       if (drawing) {
+         ctx.moveTo(lastPos.x, lastPos.y);
+         ctx.lineTo(mousePos.x, mousePos.y);
+         ctx.stroke();
+         lastPos = mousePos;
+       }
+     }
+
+     // Prevent scrolling when touching the canvas
+     document.body.addEventListener("touchstart", function(e) {
+       if (e.target == canvas) {
+         e.preventDefault();
+       }
+     }, false);
+     document.body.addEventListener("touchend", function(e) {
+       if (e.target == canvas) {
+         e.preventDefault();
+       }
+     }, false);
+     document.body.addEventListener("touchmove", function(e) {
+       if (e.target == canvas) {
+         e.preventDefault();
+       }
+     }, false);
+
+     (function drawLoop() {
+       requestAnimFrame(drawLoop);
+       renderCanvas();
+     })();
+
+     function clearCanvas() {
+       canvas.width = canvas.width;
+       var ctx = canvas.getContext("2d");
+       ctx.lineWidth = 14;
+       ctx.strokeStyle = "white";
+       $("#result-box").text("")
+      //  changing color
+      ctx.beginPath();
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+      ctx.fill();
+     }
+
+     // Set up the UI
+     var sigText = document.getElementById("sig-dataUrl");
+     var sigImage = document.getElementById("sig-image");
+     var clearBtn = document.getElementById("sig-clearBtn");
+     var submitBtn = document.getElementById("sig-submitBtn");
+     clearBtn.addEventListener("click", function(e) {
+       clearCanvas();
+       sigText.innerHTML = "Image";
+       sigImage.setAttribute("src", "");
+     }, false);
+     submitBtn.addEventListener("click", function(e) {
+       var dataUrl = canvas.toDataURL();
+       sigText.innerHTML = dataUrl;
+       sigImage.setAttribute("src", dataUrl);
+     }, false);
+
+     })();
+
+
+
+     // sending image to server
+     $(function() {
+    $('#predict-character').bind('click', function() {
+         var imagename = $('#sig-image').attr("src");
+         // var formData = new FormData(image);
+         // console.log(image)
+         devnaga = {
+            'image': imagename,
+            'modelName': $('#modelName').val(),
+            'folderName': $('#folderName').val()
+         };
+         if(imagename != ''){
+           $.ajax({
+               url: "{{ url_for('encode') }}",
+               type: 'POST',
+               data: JSON.stringify(devnaga),
+               async: false,
+               success: function (data) {
+                   let predicted = data.predicted
+                   let percent = data.percentage
+                  //  $('#result-box').text(predicted + "  " + percent)
+                   $('#result-box').text(predicted)
+                  //  playSound(`static/audio/${predicted}.wav`)
+                   console.log('Image send');
+               },
+               cache: false,
+               contentType: 'application/json',
+               processData: false
+           });
+         }
+
+        });
+});
+
+function playSound(path) {
+    const audio = new Audio(path);
+    audio.play();
+  }
+
+// make axios call to /mode-list
+$(function() {
+    // $('#model-list').bind('click', function() {
+        $.ajax({
+            url: "/model-list",
+            type: 'GET',
+            async: false,
+            success: function (data) {
+                console.log(data);
+                $('#modelName').empty();
+
+                data.modelDetails.forEach(element => {
+                  $('#modelName').append($('<option>', {
+                        value: element.modelName,
+                        text: element.modelName
+                    }));
+                });
+                // for (let i = 0; i < data.modelDetails.length; i++) {
+                //     $('#modelName').append($('<option>', {
+                //         value: data.modelDetails[i].modelName,
+                //         text: data.modelDetails[i].modelName
+                //     }));
+                // }
+            },
+            cache: false,
+            contentType: 'application/json',
+            processData: false
+        });
+    // });
+
+  // console.log('audio/character_1_ka.mp3');
+
+});
+
+   </script>
+</html>

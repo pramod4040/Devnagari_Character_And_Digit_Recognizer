@@ -1,0 +1,16 @@
+- Implemented factory Pattern for model creation
+
+
+Tomorrow:
+
+- model is not working good, find out model weights and prepare proper way
+to load model, what info is neeeded 
+
+- load model and see results
+
+
+
+- Create a small data set generator, here we will create a small set of images
+- write code to skeletonize all the image in that small data set 
+
+- For this small data set let's run our all variant of models
