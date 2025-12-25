@@ -10,5 +10,6 @@ This is a web-based platform that allows users to write Devanagari characters an
 
 #  Run Flask App to Test This
 
-> pip install -r requirements.txt
+> pip install -r requirements.txt 
+
 > python wsgi.py
